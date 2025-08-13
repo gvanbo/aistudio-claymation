@@ -1,12 +1,13 @@
 
 import { GoogleGenAI } from "@google/genai";
 
-// Ensure the API_KEY is available as an environment variable
-if (!process.env.API_KEY) {
-    throw new Error("API_KEY environment variable not set.");
+// Prefer GEMINI_API_KEY (explicit) fallback to generic API_KEY for backwards compatibility
+const apiKey = process.env.GEMINI_API_KEY || process.env.API_KEY;
+if (!apiKey) {
+    throw new Error("GEMINI_API_KEY (or legacy API_KEY) environment variable not set.");
 }
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const ai = new GoogleGenAI({ apiKey });
 
 export async function generateImage(prompt: string): Promise<string> {
     try {

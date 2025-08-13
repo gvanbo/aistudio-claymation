@@ -1,0 +1,28 @@
+name: Generate Test Image
+
+on:
+  workflow_dispatch:
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Generate sample image (dry run)
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          node -e "(async()=>{const { GoogleGenAI } = await import('@google/genai'); const ai=new GoogleGenAI({apiKey:process.env.GEMINI_API_KEY}); const r=await ai.models.generateImages({model:'imagen-3.0-generate-002',prompt:'Test clay figure',config:{numberOfImages:1,outputMimeType:'image/jpeg',aspectRatio:'1:1'}}); console.log('Got image bytes length:', r.generatedImages?.[0]?.image?.imageBytes?.length);})();"
