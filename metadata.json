@@ -1,0 +1,5 @@
+{
+  "name": "Claymation Characters by AI Studio",
+  "description": "An application to generate images of predefined characters in various poses using the Gemini API. Select a character and a pose to create a unique image.",
+  "requestFramePermissions": []
+}
