@@ -1,6 +1,8 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import Spinner from './Spinner';
+import DownloadModal from './DownloadModal';
+import Button from './Button';
 
 interface ImageDisplayProps {
   image: string | null;
@@ -17,6 +19,8 @@ const Placeholder = () => (
 );
 
 const ImageDisplay = ({ image, isLoading, error }: ImageDisplayProps): React.ReactNode => {
+  const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
+
   if (isLoading) {
     return <Spinner />;
   }
@@ -32,11 +36,24 @@ const ImageDisplay = ({ image, isLoading, error }: ImageDisplayProps): React.Rea
 
   if (image) {
     return (
-      <img
-        src={`data:image/jpeg;base64,${image}`}
-        alt="Generated character"
-        className="max-w-full max-h-[512px] object-contain rounded-lg shadow-lg"
-      />
+      <div className="text-center space-y-4">
+        <img
+          src={`data:image/jpeg;base64,${image}`}
+          alt="Generated character"
+          className="max-w-full max-h-[512px] object-contain rounded-lg shadow-lg mx-auto"
+        />
+        <Button
+          onClick={() => setIsDownloadModalOpen(true)}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 text-sm font-medium w-auto mx-auto"
+        >
+          📥 Download Image
+        </Button>
+        <DownloadModal
+          isOpen={isDownloadModalOpen}
+          onClose={() => setIsDownloadModalOpen(false)}
+          imageData={image}
+        />
+      </div>
     );
   }
 
