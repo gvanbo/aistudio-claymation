@@ -1,4 +1,3 @@
-
 import { GoogleGenAI } from "@google/genai";
 
 // Prefer GEMINI_API_KEY (explicit) fallback to generic API_KEY for backwards compatibility

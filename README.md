@@ -1,44 +1,138 @@
+# 🎓 Enhanced Educational Character Generator
+
 <div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+<img width="1200" height="475" alt="Enhanced Educational Character Generator" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
 </div>
 
-# Run and deploy your AI Studio app
+## 🌟 Enhanced Features for Educational Excellence
 
-This contains everything you need to run your app locally.
+This is the enhanced version of the aistudio-claymation application, now optimized for creating high-quality educational resources. It combines the rich character system of the original with professional prompt generation and quality controls.
 
-View your app in AI Studio: https://ai.studio/apps/drive/1n69MkPl4xUvrUv_uCnjV7p3o1-l3-r5Q
+## 🚀 Quick Start
 
-## Run Locally
+**Prerequisites:** Node.js
 
-**Prerequisites:**  Node.js
+1. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
+2. **Set up environment:**
+   Create `.env.local` file with your Gemini API key:
+   ```
+   GEMINI_API_KEY=your_api_key_here
+   ```
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+3. **Run the application:**
+   ```bash
+   npm run dev
+   ```
 
-## Environment Variables & GitHub Secrets
+## 🎯 Educational Use Cases
 
-Local development:
-1. Copy `.env.example` to `.env` (or `.env.local`).
-2. Add your real key: `GEMINI_API_KEY=sk-...`
-3. Vite exposes it at build time via the `define` block in `vite.config.ts` as `process.env.GEMINI_API_KEY` (and legacy `process.env.API_KEY`).
+### 📖 Print Materials
+- **Quality Preset**: "Educational Print"
+- **Format**: PNG with transparency
+- **Background**: Transparent for flexible overlay
+- **Use**: Textbooks, worksheets, handouts
 
-GitHub Actions (CI/CD):
-1. In the repository settings, add a Repository Secret named `GEMINI_API_KEY`.
-2. Reference it in workflows as `${{ secrets.GEMINI_API_KEY }}`.
-3. Example job step (see created workflow in `.github/workflows/generate-image.yml`):
-```
-      env:
-         GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-```
+### 💻 Online Learning
+- **Quality Preset**: "Online Learning"  
+- **Format**: JPEG optimized for web
+- **Background**: Solid white for clean presentation
+- **Use**: LMS platforms, digital courses, websites
 
-Security notes:
-- Never commit `.env` files (they are ignored via `.gitignore`).
-- Rotate keys if you suspect leakage.
-- Keep the secret name consistent (`GEMINI_API_KEY`).
+### 🎮 Interactive Content
+- **Quality Preset**: "Interactive Scenes"
+- **Format**: PNG with transparency
+- **Background**: Transparent for overlay use
+- **Use**: Interactive lessons, games, presentations
 
-Runtime behavior:
-- The service code (`services/geminiService.ts`) prefers `GEMINI_API_KEY` and falls back to a legacy `API_KEY` if present.
+## ✨ Key Enhancements
+
+### 🎨 Professional Quality Control
+- **Quality Presets**: Optimized configurations for different educational contexts
+- **Background Options**: Transparent, solid white, or illustrated backgrounds
+- **Output Formats**: PNG for transparency, JPEG for web optimization
+- **Resolution Control**: Web, print, and high-resolution options
+
+### 👥 Advanced Character Management
+- **Individual Control**: Separate pose descriptions for each character in multi-character scenes
+- **Height Relationships**: Automatic scaling for realistic multi-character interactions
+- **Rich Pose Library**: Pre-defined poses for consistency and speed
+- **Educational Characters**: Students and teachers with appropriate characteristics
+
+### 🧠 Intelligent Prompt Generation
+- **Structured Format**: Professional prompt templates with clear instructions
+- **Educational Optimization**: Prompts specifically designed for educational content
+- **Quality Specifications**: Automatic inclusion of quality and format requirements
+- **Consistency Controls**: Ensures reliable, professional output
+
+## 🔧 Technical Features
+
+### Backward Compatibility
+- ✅ All original functionality preserved
+- ✅ Existing workflows continue unchanged
+- ✅ Original character data maintained
+- ✅ Feature flags for gradual rollout
+
+### Enhanced Capabilities
+- 🆕 Quality preset system
+- 🆕 Background control options
+- 🆕 Individual character pose control
+- 🆕 Structured prompt generation
+- 🆕 Educational resource optimization
+
+### Test Coverage
+- ✅ Character data transformation
+- ✅ Prompt generation logic
+- ✅ Configuration validation
+- ✅ Multi-character scenarios
+- ✅ Error handling
+
+## 📚 Documentation
+
+- **[Architecture Comparison](ARCHITECTURE_COMPARISON.md)**: Technical analysis of both systems
+- **[Integration Plan](INTEGRATION_PLAN.md)**: Implementation strategy and phases
+- **[Migration Guide](MIGRATION_GUIDE.md)**: Upgrade instructions and compatibility
+- **[Enhancement Summary](ENHANCEMENT_SUMMARY.md)**: Complete feature overview
+- **[Deployment Checklist](DEPLOYMENT_CHECKLIST.md)**: Production deployment guide
+
+## 🎓 Educational Benefits
+
+### For Teachers
+- Create professional character images for lesson plans
+- Generate consistent visuals across curriculum materials
+- Produce print-ready graphics for handouts and tests
+- Develop interactive content with transparent overlays
+
+### For Students
+- Engage with high-quality, consistent character representations
+- Access materials optimized for different learning contexts
+- Experience professional-grade educational content
+
+### For Institutions
+- Maintain brand consistency across educational materials
+- Reduce design costs through automated generation
+- Ensure accessibility with multiple format options
+- Meet professional standards for educational publishing
+
+## 🔧 Development Commands
+
+- **Start development**: `npm run dev`
+- **Build for production**: `npm run build`
+- **Preview production**: `npm run preview`
+- **Run tests**: `npm test`
+- **Watch tests**: `npm test:watch`
+
+## 🌟 What Makes This Special
+
+This enhanced character generator bridges the gap between AI-powered creativity and educational professionalism. It provides:
+
+1. **Reliability**: Tested, structured prompt generation for consistent results
+2. **Flexibility**: Multiple quality and background options for different contexts
+3. **Professionalism**: High-quality output suitable for institutional use
+4. **Efficiency**: Smart presets eliminate guesswork and save time
+5. **Compatibility**: Works seamlessly with existing educational workflows
+
+Perfect for educators, content creators, and institutions looking to create professional-grade character visuals for educational resources.

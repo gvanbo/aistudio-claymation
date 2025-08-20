@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Character } from '../types';
 
@@ -22,7 +21,7 @@ const CharacterCard = ({ character, characterKey, isSelected, onSelect }: Charac
     return (
         <div
             onClick={() => onSelect(characterKey)}
-            className={`cursor-pointer p-4 rounded-lg transition-all duration-200 ${bgClass} ${ringClass}`}
+            className={`cursor-pointer p-4 rounded-lg transition-all duration-200 ${bgClass} ${ringClass} character-card-educational ${isSelected ? 'selected' : ''}`}
             role="checkbox"
             aria-checked={isSelected}
             tabIndex={0}
@@ -33,7 +32,6 @@ const CharacterCard = ({ character, characterKey, isSelected, onSelect }: Charac
         </div>
     );
 };
-
 
 const CharacterSelector = ({ characters, selectedCharacterKeys, onSelect }: CharacterSelectorProps): React.ReactNode => {
   return (

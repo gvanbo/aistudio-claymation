@@ -42,13 +42,13 @@ const QUALITY_OPTIONS: QualityOption[] = [
   },
   {
     level: 'original',
-    label: 'Original Quality',
-    description: 'Full resolution, no compression - Largest file size',
+    label: 'Original Quality (Educational)',
+    description: 'Full resolution, no compression - Best for educational materials',
   }
 ];
 
 const DownloadModal = ({ isOpen, onClose, imageData }: DownloadModalProps): React.ReactNode => {
-  const [selectedQuality, setSelectedQuality] = useState<QualityLevel>('medium');
+  const [selectedQuality, setSelectedQuality] = useState<QualityLevel>('high');
   const [selectedFormat, setSelectedFormat] = useState<ImageFormat>('png');
   const [isDownloading, setIsDownloading] = useState(false);
 
@@ -101,7 +101,7 @@ const DownloadModal = ({ isOpen, onClose, imageData }: DownloadModalProps): Reac
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = `claymation-character-${Date.now()}.${selectedFormat}`;
+        link.download = `educational-character-${Date.now()}.${selectedFormat}`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -125,7 +125,7 @@ const DownloadModal = ({ isOpen, onClose, imageData }: DownloadModalProps): Reac
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Download Image</h2>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Download Educational Image</h2>
             <button
               onClick={onClose}
               className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-2xl"
@@ -150,7 +150,7 @@ const DownloadModal = ({ isOpen, onClose, imageData }: DownloadModalProps): Reac
                     onChange={(e) => setSelectedFormat(e.target.value as ImageFormat)}
                     className="mr-2"
                   />
-                  <span className="text-sm text-gray-700 dark:text-gray-300">PNG (Lossless)</span>
+                  <span className="text-sm text-gray-700 dark:text-gray-300">PNG (Best for Education)</span>
                 </label>
                 <label className="flex items-center">
                   <input

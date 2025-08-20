@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 interface CustomPromptInputProps {
@@ -13,9 +12,11 @@ interface CustomPromptInputProps {
 const CustomPromptInput = ({ prompt, onPromptChange, disabled, label, placeholder, description }: CustomPromptInputProps): React.ReactNode => {
     return (
         <div>
-            <label htmlFor="custom-prompt" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                {label}
-            </label>
+            {label && (
+                <label htmlFor="custom-prompt" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    {label}
+                </label>
+            )}
             <textarea
                 id="custom-prompt"
                 rows={4}
@@ -27,9 +28,11 @@ const CustomPromptInput = ({ prompt, onPromptChange, disabled, label, placeholde
                 aria-label="Custom pose or scene description"
                 aria-describedby="custom-prompt-description"
             />
-            <p id="custom-prompt-description" className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-                {description}
-            </p>
+            {description && (
+                <p id="custom-prompt-description" className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                    {description}
+                </p>
+            )}
         </div>
     );
 };

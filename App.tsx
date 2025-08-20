@@ -1,24 +1,62 @@
+// Enhanced App.tsx - Drop-in replacement with backward compatibility
+// Combines best practices from both aistudio-claymation and cartoon-character-generator
 
 import React, { useState, useMemo } from 'react';
 import { Character } from './types';
+import { EnhancedCharacter, GenerationConfig, PromptGenerationOptions, QUALITY_PRESETS } from './types.enhanced';
 import { CHARACTERS_DATA } from './constants/characters';
-import { generateImage as generateImageFromApi } from './services/geminiService';
+import { generateImage } from './services/geminiService.enhanced';
+import { transformCharacterData, generatePrompt } from './utils/promptGenerator';
 import Header from './components/Header';
 import CharacterSelector from './components/CharacterSelector';
-import ImageDisplay from './components/ImageDisplay';
+import ImageDisplay from './components/ImageDisplay.enhanced';
 import Button from './components/Button';
 import CustomPromptInput from './components/CustomPromptInput';
 import PoseReferenceLibrary from './components/PoseReferenceLibrary';
+import QualitySelector from './components/QualitySelector';
+import BackgroundSelector from './components/BackgroundSelector';
+
+// Feature flags for gradual rollout
+const FEATURE_FLAGS = {
+  useEnhancedPrompts: true,
+  enableQualityPresets: true,
+  enableBackgroundControl: true,
+  enableIndividualCharacterPrompts: true
+};
 
 export default function App(): React.ReactNode {
+  // Original state (preserved for backward compatibility)
   const [selectedCharacterKeys, setSelectedCharacterKeys] = useState<string[]>([]);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [customPrompt, setCustomPrompt] = useState<string>('');
 
+  // Enhanced state for new features
+  const [selectedQualityPreset, setSelectedQualityPreset] = useState<string>('Educational Print');
+  const [generationConfig, setGenerationConfig] = useState<GenerationConfig>({
+    outputFormat: 'png',
+    backgroundOption: 'transparent',
+    qualityLevel: 'print',
+    aspectRatio: '1:1'
+  });
+  const [promptOptions, setPromptOptions] = useState<PromptGenerationOptions>({
+    useStructuredFormat: FEATURE_FLAGS.useEnhancedPrompts,
+    includeHeightCalculations: true,
+    educationalOptimization: true
+  });
+  const [characterPrompts, setCharacterPrompts] = useState<Record<string, string>>({});
+  const [interactionPrompt, setInteractionPrompt] = useState<string>('');
+  const [customBackground, setCustomBackground] = useState<string>('');
+
   const characters = CHARACTERS_DATA.characters;
   
+  // Transform characters to enhanced format
+  const enhancedCharacters = useMemo<EnhancedCharacter[]>(() => {
+    return selectedCharacterKeys.map(key => transformCharacterData(key, characters[key]));
+  }, [selectedCharacterKeys, characters]);
+
+  // Original character selection (preserved)
   const selectedCharacters = useMemo<Character[]>(() => {
     return selectedCharacterKeys.map(key => characters[key]);
   }, [selectedCharacterKeys, characters]);
@@ -32,20 +70,47 @@ export default function App(): React.ReactNode {
     });
     setGeneratedImage(null);
     setError(null);
-    setCustomPrompt(''); // Reset prompt on any character selection change for simplicity
+    
+    // Enhanced: Preserve individual character prompts
+    if (!selectedCharacterKeys.includes(characterKey)) {
+      setCharacterPrompts(prev => {
+        const newPrompts = { ...prev };
+        delete newPrompts[characterKey];
+        return newPrompts;
+      });
+    }
   };
+
+  const handleQualityPresetChange = (presetName: string): void => {
+    const preset = QUALITY_PRESETS.find(p => p.name === presetName);
+    if (preset) {
+      setSelectedQualityPreset(presetName);
+      setGenerationConfig(preset.config);
+      setPromptOptions(preset.promptOptions);
+    }
+  };
+
+  const handleCharacterPromptChange = (characterKey: string, prompt: string): void => {
+    setCharacterPrompts(prev => ({ ...prev, [characterKey]: prompt }));
+  };
+
+  const isGenerationDisabled = useMemo(() => {
+    if (selectedCharacterKeys.length === 0 || isLoading) return true;
+    
+    if (FEATURE_FLAGS.enableIndividualCharacterPrompts && promptOptions.useStructuredFormat && selectedCharacterKeys.length > 1) {
+      // For enhanced multi-character mode, require individual prompts
+      return !selectedCharacterKeys.every(key => characterPrompts[key]?.trim());
+    } else {
+      // For single character or legacy mode, use global prompt or individual prompts
+      const hasGlobalPrompt = customPrompt.trim();
+      const hasIndividualPrompts = Object.values(characterPrompts).some(p => p?.trim());
+      return !hasGlobalPrompt && !hasIndividualPrompts;
+    }
+  }, [selectedCharacterKeys, isLoading, customPrompt, characterPrompts, promptOptions.useStructuredFormat]);
   
   const handleGenerateImage = async (): Promise<void> => {
     if (selectedCharacterKeys.length === 0) {
       setError("Please select at least one character first.");
-      return;
-    }
-    
-    if (!customPrompt.trim()) {
-       setError(selectedCharacterKeys.length > 1 
-        ? "Please describe the scene in the text box." 
-        : "Please describe a pose in the text box."
-      );
       return;
     }
     
@@ -54,25 +119,46 @@ export default function App(): React.ReactNode {
     setError(null);
     
     try {
-      const firstCharacter = selectedCharacters[0];
       let prompt: string;
+      const configWithBackground = {
+        ...generationConfig,
+        customBackground: customBackground || undefined
+      };
 
-      if (selectedCharacters.length > 1) {
+      if (FEATURE_FLAGS.useEnhancedPrompts && promptOptions.useStructuredFormat) {
+        // Use enhanced structured prompt generation
+        const finalCharacterPrompts = selectedCharacterKeys.reduce((acc, key) => {
+          acc[key] = characterPrompts[key] || customPrompt;
+          return acc;
+        }, {} as Record<string, string>);
+
+        prompt = generatePrompt(
+          enhancedCharacters,
+          finalCharacterPrompts,
+          interactionPrompt,
+          configWithBackground,
+          promptOptions
+        );
+      } else {
+        // Fallback to original aistudio-claymation logic (preserved exactly)
+        const firstCharacter = selectedCharacters[0];
+        
+        if (selectedCharacters.length > 1) {
           const characterDefinitions = selectedCharacters
-              .map(char => `${char.character_name} is ${char.base_description}`)
-              .join('. ');
+            .map(char => `${char.character_name} is ${char.base_description}`)
+            .join('. ');
           
           type HeightCategory = 'short' | 'medium' | 'tall';
           const getHeightCategory = (char: Character): HeightCategory => {
-              if (char.character_short_description.includes('grade 1')) return 'short';
-              if (char.character_short_description.includes('grade 6')) return 'medium';
-              if (char.character_short_description.includes('teacher')) return 'tall';
-              return 'medium'; // Fallback
+            if (char.character_short_description.includes('grade 1')) return 'short';
+            if (char.character_short_description.includes('grade 6')) return 'medium';
+            if (char.character_short_description.includes('teacher')) return 'tall';
+            return 'medium';
           };
 
           const characterHeights = selectedCharacters.map(char => ({
-              name: char.character_name,
-              category: getHeightCategory(char)
+            name: char.character_name,
+            category: getHeightCategory(char)
           }));
           
           const heightOrder: HeightCategory[] = ['short', 'medium', 'tall'];
@@ -80,26 +166,25 @@ export default function App(): React.ReactNode {
           
           let heightDescriptions = '';
           for (let i = 1; i < characterHeights.length; i++) {
-              const shorterChar = characterHeights[i-1];
-              const tallerChar = characterHeights[i];
-              if (shorterChar.category !== tallerChar.category) {
-                  heightDescriptions += `${tallerChar.name} is taller than ${shorterChar.name}. `;
-              }
+            const shorterChar = characterHeights[i-1];
+            const tallerChar = characterHeights[i];
+            if (shorterChar.category !== tallerChar.category) {
+              heightDescriptions += `${tallerChar.name} is taller than ${shorterChar.name}. `;
+            }
           }
 
           let fullPrompt = `${firstCharacter.style_prefix}, ${customPrompt}. The scene features: ${characterDefinitions}.`;
           if (heightDescriptions) {
-              fullPrompt += ` For realistic scale, remember that ${heightDescriptions.trim()}`;
+            fullPrompt += ` For realistic scale, remember that ${heightDescriptions.trim()}`;
           }
           fullPrompt += ` ${firstCharacter.style_suffix}`;
           prompt = fullPrompt;
-
-      } else {
-          // Keep original, well-tuned prompt for single characters
+        } else {
           prompt = `${firstCharacter.style_prefix}, ${firstCharacter.base_description}, ${customPrompt}${firstCharacter.style_suffix}`;
+        }
       }
 
-      const imageB64 = await generateImageFromApi(prompt);
+      const imageB64 = await generateImage(prompt, configWithBackground);
       setGeneratedImage(imageB64);
     } catch (err) {
       console.error(err);
@@ -109,21 +194,34 @@ export default function App(): React.ReactNode {
     }
   };
 
-  const isGenerationDisabled = selectedCharacterKeys.length === 0 || !customPrompt.trim() || isLoading;
   const isMultiSelect = selectedCharacterKeys.length > 1;
   const singleSelectedCharacter = selectedCharacterKeys.length === 1 ? selectedCharacters[0] : null;
+  const useIndividualPrompts = FEATURE_FLAGS.enableIndividualCharacterPrompts && 
+                               promptOptions.useStructuredFormat && 
+                               isMultiSelect;
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans">
       <Header />
       <main className="container mx-auto p-4 sm:p-6 lg:p-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Controls Panel */}
+          {/* Enhanced Controls Panel */}
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 flex flex-col space-y-6 h-full border border-gray-200 dark:border-gray-700">
             <div>
-              <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-1">Create Your Character Scene</h2>
-              <p className="text-gray-500 dark:text-gray-400">Select characters and describe a pose or a scene to bring them to life.</p>
+              <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-1">Create Educational Character Images</h2>
+              <p className="text-gray-500 dark:text-gray-400">Generate high-quality characters optimized for educational resources, print, and online use.</p>
             </div>
+
+            {/* Quality Preset Selector - New Feature */}
+            {FEATURE_FLAGS.enableQualityPresets && (
+              <QualitySelector
+                selectedPreset={selectedQualityPreset}
+                onPresetChange={handleQualityPresetChange}
+                presets={QUALITY_PRESETS}
+              />
+            )}
+
+            {/* Character Selection - Enhanced but backward compatible */}
             <CharacterSelector
               characters={characters}
               selectedCharacterKeys={selectedCharacterKeys}
@@ -132,36 +230,101 @@ export default function App(): React.ReactNode {
 
             {selectedCharacterKeys.length > 0 && (
               <div className="space-y-6">
-                <CustomPromptInput 
+                {/* Background Options - New Feature */}
+                {FEATURE_FLAGS.enableBackgroundControl && (
+                  <BackgroundSelector
+                    backgroundOption={generationConfig.backgroundOption}
+                    customBackground={customBackground}
+                    onBackgroundChange={(option) => setGenerationConfig(prev => ({ ...prev, backgroundOption: option }))}
+                    onCustomBackgroundChange={setCustomBackground}
+                  />
+                )}
+
+                {/* Enhanced Prompt Input */}
+                {useIndividualPrompts ? (
+                  // Individual character prompts (from cartoon-character-generator)
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-gray-800 dark:text-white">Individual Character Poses</h3>
+                    {selectedCharacterKeys.map(key => (
+                      <div key={key}>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          {characters[key].character_name}
+                        </label>
+                        <CustomPromptInput
+                          prompt={characterPrompts[key] || ''}
+                          onPromptChange={(value) => handleCharacterPromptChange(key, value)}
+                          disabled={isLoading}
+                          label=""
+                          placeholder={`Describe ${characters[key].character_name}'s pose...`}
+                          description=""
+                        />
+                      </div>
+                    ))}
+                    {isMultiSelect && (
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Scene Interaction
+                        </label>
+                        <CustomPromptInput
+                          prompt={interactionPrompt}
+                          onPromptChange={setInteractionPrompt}
+                          disabled={isLoading}
+                          label=""
+                          placeholder="Describe how the characters interact..."
+                          description="How do the characters relate to each other in the scene?"
+                        />
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  // Original global prompt input (preserved)
+                  <CustomPromptInput 
                     prompt={customPrompt}
                     onPromptChange={setCustomPrompt}
                     disabled={isLoading}
                     label={isMultiSelect ? '2. Describe the Scene' : '2. Describe the Pose'}
                     placeholder={isMultiSelect ? 'e.g., Marcus and Priya studying together at a library desk with books.' : 'e.g., jumping in the air with excitement'}
                     description={isMultiSelect ? "Describe how the characters interact with each other and their environment." : "This will be combined with the character's base description to create the final image prompt."}
-                />
+                  />
+                )}
+
+                {/* Pose Reference Library - Preserved */}
                 {singleSelectedCharacter && (
-                    <PoseReferenceLibrary 
-                        character={singleSelectedCharacter}
-                        onPoseSelect={setCustomPrompt}
-                    />
+                  <PoseReferenceLibrary 
+                    character={singleSelectedCharacter}
+                    onPoseSelect={(pose) => {
+                      if (useIndividualPrompts) {
+                        handleCharacterPromptChange(selectedCharacterKeys[0], pose);
+                      } else {
+                        setCustomPrompt(pose);
+                      }
+                    }}
+                  />
                 )}
               </div>
             )}
             
             <div className="mt-auto pt-4">
               <Button onClick={handleGenerateImage} disabled={isGenerationDisabled}>
-                {isLoading ? 'Generating...' : 'Generate Image'}
+                {isLoading ? 'Generating...' : 'Generate Educational Image'}
               </Button>
+              
+              {/* Quality indicator */}
+              {FEATURE_FLAGS.enableQualityPresets && (
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 text-center">
+                  {selectedQualityPreset} • {generationConfig.outputFormat.toUpperCase()} • {generationConfig.backgroundOption}
+                </p>
+              )}
             </div>
           </div>
 
-          {/* Image Display Panel */}
+          {/* Enhanced Image Display Panel */}
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 flex items-center justify-center min-h-[400px] lg:min-h-full border border-gray-200 dark:border-gray-700">
             <ImageDisplay 
               image={generatedImage}
               isLoading={isLoading}
               error={error}
+              config={generationConfig}
             />
           </div>
         </div>

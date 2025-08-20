@@ -1,4 +1,3 @@
-
 export interface Pose {
     [key: string]: string;
 }
