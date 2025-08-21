@@ -1,7 +1,6 @@
 # Architecture Comparison: aistudio-claymation vs cartoon-character-generator
 
 ## Overview
-
 This document compares the two character generation applications to identify best practices for creating high-quality educational resources.
 
 ## Key Architectural Differences
@@ -9,41 +8,37 @@ This document compares the two character generation applications to identify bes
 ### 1. Character Data Structure
 
 **aistudio-claymation (Current)**:
-
 ```typescript
 interface Character {
-  character_name: string;
-  character_short_description: string;
-  base_description: string;
-  style_prefix: string;
-  style_suffix: string;
-  poses: { [key: string]: string };
+    character_name: string;
+    character_short_description: string;
+    base_description: string;
+    style_prefix: string;
+    style_suffix: string;
+    poses: { [key: string]: string };
 }
 ```
 
 **cartoon-character-generator (Reference)**:
-
 ```typescript
 interface Character {
-  id: string;
-  name: string;
-  appearance: string;
-  style: string;
-  placeholderImage: string;
+    id: string;
+    name: string;
+    appearance: string;
+    style: string;
+    placeholderImage: string;
 }
 ```
 
 ### 2. Prompt Generation Strategy
 
 **aistudio-claymation**:
-
 - Uses detailed style_prefix and style_suffix
 - Sophisticated multi-character height calculations
 - Claymation-specific styling with "3D claymation style character"
 - JPEG output format
 
 **cartoon-character-generator**:
-
 - Structured markdown-style prompts with **CRITICAL INSTRUCTIONS**
 - Background options (transparent/illustrated)
 - Individual character pose inputs for multi-character scenes
@@ -62,14 +57,12 @@ interface Character {
 ### 4. Image Quality Considerations for Educational Resources
 
 **For Print Quality**:
-
 - Higher resolution output
 - PNG format for transparency preservation
 - Consistent lighting and composition
 - Clear silhouettes for easy extraction
 
 **For Online Use**:
-
 - Optimized file sizes
 - Multiple quality options
 - Responsive display
