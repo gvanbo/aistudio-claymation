@@ -85,6 +85,20 @@ export const CHARACTERS_DATA: CharacterData = {
         "thinking_thoughtful": "A classic thinking pose with a hand on his chin, a thoughtful and calm expression, looking slightly to the side as if considering a problem.",
         "presenting_encouraging": "Presenting with both hands open and palms up in a welcoming gesture, an encouraging smile as if inviting students to participate."
       }
+    },
+    "dino_danny": {
+      "character_name": "Danny",
+      "character_short_description": "grade 4 boy who loves dinosaurs",
+      "base_description": "15-year-old boy who looks like he is in grade 10, short messy blond hair, hazel eyes, fair skin tone, wearing a vibrant t-shirt with a detailed T-Rex skeleton graphic and 'DINO MIGHT!' text, blue denim jeans, and sneakers designed like dinosaur feet",
+      "style_prefix": "Masterpiece 3D claymation style character",
+      "style_suffix": ", full body shot, dynamic expressive pose, perfect composition, soft even studio lighting, solid white background, no logos, no patterns on clothing except t-shirt graphic, high quality 3D render, child-friendly proportions with slightly larger head, educational cartoon style, detailed clay-like texture, clear silhouette, isolated character",
+      "poses": {
+        "waving_happy": "A friendly and energetic wave with the right arm, a big, toothy grin, body angled slightly towards the viewer.",
+        "dino_roar_playful": "A playful roar with hands held up like T-Rex claws, a wide-open mouth in a mock roar, and a fun, scrunched-up nose.",
+        "pointing_excited": "Pointing excitedly at something off-camera with a look of awe and wonder, as if discovering a new dinosaur fossil.",
+        "thinking_about_dinos": "A thoughtful pose with a finger to the temple, eyes looking up as if imagining a world full of dinosaurs, a slight, curious smile.",
+        "thumbs_up_confident": "Giving a big, confident thumbs-up with the right hand, a proud smile, standing tall as if he's the king of the dinosaurs."
+      }
     }
   }
 };
