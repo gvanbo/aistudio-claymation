@@ -1,0 +1,34 @@
+{
+  "files.associations": {
+    "*.xml": "xml",
+    "*.py": "python",
+    "*.md": "markdown"
+  },
+  "python.defaultInterpreterPath": "./venv/bin/python",
+  "python.terminal.activateEnvironment": true,
+  "files.exclude": {
+    "**/__pycache__": true,
+    "**/*.pyc": true,
+    "**/temp": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/venv": true
+  },
+  "cursor.chat.experimental.agentMode": true,
+  "files.autoSave": "afterDelay",
+  "files.autoSaveDelay": 1000,
+  "workbench.editor.enablePreview": false,
+  "breadcrumbs.enabled": true,
+  "breadcrumbs.filePath": "on",
+  "breadcrumbs.symbolPath": "on",
+  "search.quickOpen.includeSymbols": true,
+  "search.quickOpen.includeHistory": true,
+  "search.quickOpen.includeWorkspaceSymbols": true,
+  "python.linting.enabled": true,
+  "python.linting.pylintEnabled": true,
+  "python.formatting.provider": "black",
+  "xml.format.enabled": true,
+  "xml.validation.enabled": true,
+  "markdown.preview.breaks": true
+}

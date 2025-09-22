@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ticket xmlns="https://nsa-images.org/schemas/ticket/v1.0">
+  <metadata>
+    <id>NSA-2025-023</id>
+    <type>asset</type>
+    <priority>medium</priority>
+    <status>in-progress</status>
+    <created>2025-08-03T14:45:00Z</created>
+    <updated>2025-08-04T16:10:00Z</updated>
+    <version>1.0</version>
+  </metadata>
+  
+  <assignment>
+    <team>asset</team>
+    <assignee>graphic.designer</assignee>
+    <reviewer>asset.lead</reviewer>
+    <estimated_hours>12</estimated_hours>
+    <actual_hours>8</actual_hours>
+  </assignment>
+  
+  <description>
+    <title>Create Grade 2 Science Activity Icons Set</title>
+    <summary>Design and produce 15 custom activity icons for Grade 2 Science curriculum covering physical science, life science, and earth science topics</summary>
+    <details>
+      Grade 2 Science curriculum requires custom activity icons that align with NSA visual standards and support young learners' comprehension.
+      
+      Required icons by category:
+      
+      Physical Science (5 icons):
+      - Matter and materials exploration
+      - Simple machines demonstration  
+      - Forces and motion activities
+      - Sound and vibration experiments
+      - Light and shadow investigations
+      
+      Life Science (5 icons):
+      - Plant growth observation
+      - Animal habitat research
+      - Life cycle documentation
+      - Food chain exploration
+      - Ecosystem investigation
+      
+      Earth Science (5 icons):
+      - Weather pattern tracking
+      - Rock and mineral examination
+      - Water cycle demonstration
+      - Seasonal changes observation
+      - Earth and space exploration
+      
+      All icons must be SVG format, 175px width, accessible color contrast, and include descriptive alt text.
+    </details>
+    <acceptance_criteria>
+      - 15 unique SVG icons at 175px width standard
+      - Consistent visual style matching NSA brand guidelines
+      - WCAG AA color contrast compliance (4.5:1 minimum)
+      - Age-appropriate imagery for Grade 2 students (6-7 years)
+      - Clear visual metaphors that support learning objectives
+      - Proper file naming following NSA conventions
+      - Integration with icon-map.json system
+    </acceptance_criteria>
+  </description>
+  
+  <requirements>
+    <deliverable>15 SVG icon files with consistent styling</deliverable>
+    <deliverable>Updated icon-map.json with new entries</deliverable>
+    <deliverable>Alt text specifications for each icon</deliverable>
+    <deliverable>Usage guidelines and context documentation</deliverable>
+    <deliverable>R2 bucket upload and path validation</deliverable>
+    <dependencies>
+      <dependency id="NSA-2025-015" type="blocked-by">Asset style guide approval</dependency>
+      <dependency id="NSA-2025-067" type="related">Grade 2 Science curriculum review</dependency>
+    </dependencies>
+    <milestone>Grade 2 Content Release</milestone>
+    <due_date>2025-08-12T17:00:00Z</due_date>
+  </requirements>
+  
+  <progress>
+    <current_status>Completed 12 of 15 icons, conducting accessibility review</current_status>
+    <completion_percentage>80</completion_percentage>
+    <next_steps>
+      <step priority="1" assignee="graphic.designer" due_date="2025-08-05T12:00:00Z">Complete final 3 Earth Science icons</step>
+      <step priority="2" assignee="graphic.designer" due_date="2025-08-05T17:00:00Z">Conduct full accessibility audit</step>
+      <step priority="3" assignee="asset.lead" due_date="2025-08-06T10:00:00Z">Review and approve icon set</step>
+      <step priority="4" assignee="graphic.designer" due_date="2025-08-06T15:00:00Z">Upload to R2 bucket and update icon-map.json</step>
+      <step priority="5" assignee="asset.lead" due_date="2025-08-07T12:00:00Z">Coordinate with development team for integration testing</step>
+    </next_steps>
+    <risks>
+      <risk probability="low" impact="medium" mitigation="Have simplified backup versions ready">
+        Icons may be too complex for Grade 2 comprehension level
+      </risk>
+      <risk probability="medium" impact="low" mitigation="Use automated contrast checking tools">
+        Color contrast issues in some icon combinations
+      </risk>
+    </risks>
+  </progress>
+  
+  <communication>
+    <updates>
+      <update timestamp="2025-08-03T14:45:00Z" author="graphic.designer" type="status">
+        Started icon design process. Completed initial sketches for Physical Science set.
+      </update>
+      <update timestamp="2025-08-04T10:20:00Z" author="graphic.designer" type="progress">
+        Physical Science and Life Science icons completed and reviewed internally.
+        Starting Earth Science set. Minor revisions needed on 2 Life Science icons for clarity.
+      </update>
+      <update timestamp="2025-08-04T16:10:00Z" author="graphic.designer" type="progress">
+        12 of 15 icons completed. Accessibility review in progress using WAVE tool.
+        Found contrast issues in 3 icons - working on adjustments.
+      </update>
+    </updates>
+    <github_issues>
+      <issue url="https://github.com/nsa/html-content/issues/89" number="89" status="open">#89 - Grade 2 Science Icon Requirements</issue>
+    </github_issues>
+    <related_documents>
+      <document url="https://drive.google.com/folder/grade2-science-icons" type="design_files" description="Icon Design Working Files"/>
+      <document url="https://nsa-images.org/brand/icon-style-guide.pdf" type="style_guide" description="NSA Icon Style Guidelines"/>
+      <document url="https://docs.google.com/spreadsheet/grade2-science-activities" type="requirements" description="Grade 2 Science Activity Requirements"/>
+    </related_documents>
+    <notifications>
+      <notify team="content" urgency="normal" method="github">
+        Grade 2 Science icons will be ready for content integration by August 7th
+      </notify>
+      <notify team="development" urgency="low" method="dashboard">
+        New icon-map.json entries will be available for testing by August 6th
+      </notify>
+    </notifications>
+  </communication>
+  
+  <team_specific>
+    <asset>
+      <asset_specifications>
+        <format>SVG</format>
+        <dimensions>175px width (scalable)</dimensions>
+        <color_palette>NSA brand colors with high contrast</color_palette>
+        <style>Flat design with minimal detail</style>
+        <accessibility>WCAG AA compliance</accessibility>
+      </asset_specifications>
+      <storage_paths>
+        <base_url>https://images.nsa-images.org/assets/icons/</base_url>
+        <naming_convention>[activity-type]-[subject][grade].svg</naming_convention>
+        <examples>
+          <example>matter-exploration-science2.svg</example>
+          <example>plant-growth-science2.svg</example>
+          <example>weather-tracking-science2.svg</example>
+        </examples>
+      </storage_paths>
+      <optimization_targets>
+        <file_size>&lt; 5KB per SVG file</file_size>
+        <load_time>&lt; 100ms per icon</load_time>
+        <scalability>Crisp rendering from 50px to 300px</scalability>
+        <browser_support>IE11+, Chrome, Firefox, Safari, Edge</browser_support>
+      </optimization_targets>
+      <quality_checklist>
+        <item status="completed">Visual consistency across icon set</item>
+        <item status="completed">Age-appropriate imagery and metaphors</item>
+        <item status="in-progress">WCAG AA color contrast validation</item>
+        <item status="pending">Cross-browser rendering testing</item>
+        <item status="pending">Integration with icon-map.json</item>
+        <item status="pending">R2 bucket upload and CDN testing</item>
+      </quality_checklist>
+      <brand_compliance>
+        <colors>
+          <primary>#00205B</primary>
+          <secondary>#1E88E5</secondary>
+          <accent>#FFA726</accent>
+          <neutral>#757575</neutral>
+        </colors>
+        <typography>Lexend font family for any text elements</typography>
+        <style_elements>Rounded corners, consistent stroke width, friendly appearance</style_elements>
+      </brand_compliance>
+    </asset>
+  </team_specific>
+</ticket>

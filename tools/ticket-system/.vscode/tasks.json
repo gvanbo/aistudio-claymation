@@ -1,0 +1,53 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Start Ticket Dispatcher",
+      "type": "shell",
+      "command": "python",
+      "args": ["HTML/tools/ticket-system/run_dispatcher.py"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Start Dashboard",
+      "type": "shell",
+      "command": "python",
+      "args": ["HTML/tools/ticket-system/dashboard.py"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Create New Ticket",
+      "type": "shell",
+      "command": "node",
+      "args": ["HTML/tools/ticket-system/create-ticket.js"],
+      "group": "build"
+    },
+    {
+      "label": "List Active Tickets",
+      "type": "shell",
+      "command": "node",
+      "args": ["HTML/tools/ticket-system/list-tickets.js"],
+      "group": "test"
+    },
+    {
+      "label": "Analyze Ticket Dependencies",
+      "type": "shell",
+      "command": "python",
+      "args": ["HTML/tools/ticket-system/analyze_dependencies.py"],
+      "group": "test"
+    }
+  ]
+}

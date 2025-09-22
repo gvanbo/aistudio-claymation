@@ -1,0 +1,359 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="https://nsa-images.org/schemas/ticket/v1.0"
+           xmlns:tns="https://nsa-images.org/schemas/ticket/v1.0"
+           elementFormDefault="qualified">
+
+  <!-- Root ticket element -->
+  <xs:element name="ticket" type="tns:TicketType"/>
+
+  <!-- Main ticket type definition -->
+  <xs:complexType name="TicketType">
+    <xs:sequence>
+      <xs:element name="metadata" type="tns:MetadataType"/>
+      <xs:element name="assignment" type="tns:AssignmentType"/>
+      <xs:element name="description" type="tns:DescriptionType"/>
+      <xs:element name="requirements" type="tns:RequirementsType"/>
+      <xs:element name="progress" type="tns:ProgressType"/>
+      <xs:element name="communication" type="tns:CommunicationType"/>
+      <xs:element name="team_specific" type="tns:TeamSpecificType" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Metadata section -->
+  <xs:complexType name="MetadataType">
+    <xs:sequence>
+      <xs:element name="id" type="tns:TicketIdType"/>
+      <xs:element name="type" type="tns:TicketTypeEnum"/>
+      <xs:element name="priority" type="tns:PriorityEnum"/>
+      <xs:element name="status" type="tns:StatusEnum"/>
+      <xs:element name="created" type="xs:dateTime"/>
+      <xs:element name="updated" type="xs:dateTime"/>
+      <xs:element name="version" type="xs:string" default="1.0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Assignment section -->
+  <xs:complexType name="AssignmentType">
+    <xs:sequence>
+      <xs:element name="team" type="tns:TeamEnum"/>
+      <xs:element name="assignee" type="xs:string" minOccurs="0"/>
+      <xs:element name="reviewer" type="xs:string" minOccurs="0"/>
+      <xs:element name="estimated_hours" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="actual_hours" type="xs:decimal" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Description section -->
+  <xs:complexType name="DescriptionType">
+    <xs:sequence>
+      <xs:element name="title" type="xs:string"/>
+      <xs:element name="summary" type="xs:string"/>
+      <xs:element name="details" type="xs:string"/>
+      <xs:element name="acceptance_criteria" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Requirements section -->
+  <xs:complexType name="RequirementsType">
+    <xs:sequence>
+      <xs:element name="deliverable" type="xs:string" maxOccurs="unbounded"/>
+      <xs:element name="dependencies" type="tns:DependenciesType" minOccurs="0"/>
+      <xs:element name="milestone" type="xs:string" minOccurs="0"/>
+      <xs:element name="due_date" type="xs:dateTime" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Dependencies -->
+  <xs:complexType name="DependenciesType">
+    <xs:sequence>
+      <xs:element name="dependency" type="tns:DependencyType" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="DependencyType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="id" type="tns:TicketIdType" use="required"/>
+        <xs:attribute name="type" type="tns:DependencyTypeEnum" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <!-- Progress section -->
+  <xs:complexType name="ProgressType">
+    <xs:sequence>
+      <xs:element name="current_status" type="xs:string"/>
+      <xs:element name="completion_percentage" type="tns:PercentageType" minOccurs="0"/>
+      <xs:element name="next_steps" type="tns:NextStepsType"/>
+      <xs:element name="blockers" type="tns:BlockersType" minOccurs="0"/>
+      <xs:element name="risks" type="tns:RisksType" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Next steps -->
+  <xs:complexType name="NextStepsType">
+    <xs:sequence>
+      <xs:element name="step" type="tns:StepType" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="StepType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="priority" type="xs:int" use="required"/>
+        <xs:attribute name="assignee" type="xs:string"/>
+        <xs:attribute name="due_date" type="xs:dateTime"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <!-- Blockers -->
+  <xs:complexType name="BlockersType">
+    <xs:sequence>
+      <xs:element name="blocker" type="tns:BlockerType" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="BlockerType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="severity" type="tns:SeverityEnum"/>
+        <xs:attribute name="identified_date" type="xs:dateTime"/>
+        <xs:attribute name="owner" type="xs:string"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <!-- Risks -->
+  <xs:complexType name="RisksType">
+    <xs:sequence>
+      <xs:element name="risk" type="tns:RiskType" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="RiskType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="probability" type="tns:ProbabilityEnum"/>
+        <xs:attribute name="impact" type="tns:ImpactEnum"/>
+        <xs:attribute name="mitigation" type="xs:string"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <!-- Communication section -->
+  <xs:complexType name="CommunicationType">
+    <xs:sequence>
+      <xs:element name="updates" type="tns:UpdatesType"/>
+      <xs:element name="github_issues" type="tns:GitHubIssuesType" minOccurs="0"/>
+      <xs:element name="related_documents" type="tns:RelatedDocumentsType" minOccurs="0"/>
+      <xs:element name="notifications" type="tns:NotificationsType" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Updates -->
+  <xs:complexType name="UpdatesType">
+    <xs:sequence>
+      <xs:element name="update" type="tns:UpdateType" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="UpdateType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="timestamp" type="xs:dateTime" use="required"/>
+        <xs:attribute name="author" type="xs:string" use="required"/>
+        <xs:attribute name="type" type="tns:UpdateTypeEnum" default="status"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <!-- GitHub Issues -->
+  <xs:complexType name="GitHubIssuesType">
+    <xs:sequence>
+      <xs:element name="issue" type="tns:GitHubIssueType" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="GitHubIssueType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="url" type="xs:anyURI" use="required"/>
+        <xs:attribute name="number" type="xs:int"/>
+        <xs:attribute name="status" type="xs:string"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <!-- Related Documents -->
+  <xs:complexType name="RelatedDocumentsType">
+    <xs:sequence>
+      <xs:element name="document" type="tns:DocumentType" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="DocumentType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="url" type="xs:anyURI"/>
+        <xs:attribute name="type" type="xs:string"/>
+        <xs:attribute name="description" type="xs:string"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <!-- Notifications -->
+  <xs:complexType name="NotificationsType">
+    <xs:sequence>
+      <xs:element name="notify" type="tns:NotifyType" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="NotifyType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="team" type="tns:TeamEnum"/>
+        <xs:attribute name="urgency" type="tns:UrgencyEnum"/>
+        <xs:attribute name="method" type="tns:NotificationMethodEnum"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <!-- Team specific extensions placeholder -->
+  <xs:complexType name="TeamSpecificType">
+    <xs:sequence>
+      <xs:any processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Simple types and enumerations -->
+  <xs:simpleType name="TicketIdType">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="NSA-[0-9]{4}-[0-9]{3}"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="TicketTypeEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="content"/>
+      <xs:enumeration value="development"/>
+      <xs:enumeration value="asset"/>
+      <xs:enumeration value="qa"/>
+      <xs:enumeration value="infrastructure"/>
+      <xs:enumeration value="cross-team"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="TeamEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="content"/>
+      <xs:enumeration value="development"/>
+      <xs:enumeration value="asset"/>
+      <xs:enumeration value="qa"/>
+      <xs:enumeration value="infrastructure"/>
+      <xs:enumeration value="leadership"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="PriorityEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="critical"/>
+      <xs:enumeration value="high"/>
+      <xs:enumeration value="medium"/>
+      <xs:enumeration value="low"/>
+      <xs:enumeration value="backlog"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="StatusEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="open"/>
+      <xs:enumeration value="assigned"/>
+      <xs:enumeration value="in-progress"/>
+      <xs:enumeration value="blocked"/>
+      <xs:enumeration value="review"/>
+      <xs:enumeration value="testing"/>
+      <xs:enumeration value="done"/>
+      <xs:enumeration value="archived"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="DependencyTypeEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="blocks"/>
+      <xs:enumeration value="blocked-by"/>
+      <xs:enumeration value="related"/>
+      <xs:enumeration value="duplicate"/>
+      <xs:enumeration value="child"/>
+      <xs:enumeration value="parent"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="SeverityEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="critical"/>
+      <xs:enumeration value="high"/>
+      <xs:enumeration value="medium"/>
+      <xs:enumeration value="low"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ProbabilityEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="very-high"/>
+      <xs:enumeration value="high"/>
+      <xs:enumeration value="medium"/>
+      <xs:enumeration value="low"/>
+      <xs:enumeration value="very-low"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ImpactEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="critical"/>
+      <xs:enumeration value="high"/>
+      <xs:enumeration value="medium"/>
+      <xs:enumeration value="low"/>
+      <xs:enumeration value="minimal"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="UpdateTypeEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="status"/>
+      <xs:enumeration value="progress"/>
+      <xs:enumeration value="blocker"/>
+      <xs:enumeration value="completion"/>
+      <xs:enumeration value="escalation"/>
+      <xs:enumeration value="comment"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="UrgencyEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="immediate"/>
+      <xs:enumeration value="high"/>
+      <xs:enumeration value="normal"/>
+      <xs:enumeration value="low"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="NotificationMethodEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="github"/>
+      <xs:enumeration value="email"/>
+      <xs:enumeration value="slack"/>
+      <xs:enumeration value="teams"/>
+      <xs:enumeration value="dashboard"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="PercentageType">
+    <xs:restriction base="xs:int">
+      <xs:minInclusive value="0"/>
+      <xs:maxInclusive value="100"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+</xs:schema>

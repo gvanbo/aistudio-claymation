@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ticket xmlns="https://nsa-images.org/schemas/ticket/v1.0">
+  <metadata>
+    <id>NSA-2025-001</id>
+    <type>content</type>
+    <priority>high</priority>
+    <status>open</status>
+    <created>2025-08-04T10:30:00Z</created>
+    <updated>2025-08-04T10:30:00Z</updated>
+    <version>1.0</version>
+  </metadata>
+  
+  <assignment>
+    <team>content</team>
+    <assignee>content.creator</assignee>
+    <reviewer>content.lead</reviewer>
+    <estimated_hours>6</estimated_hours>
+  </assignment>
+  
+  <description>
+    <title>Create SS1 Unit 2 Engage Section Activities</title>
+    <summary>Design and create engaging activities for Social Studies Grade 1 Unit 2 focusing on community helpers and local landmarks</summary>
+    <details>
+      The Engage section needs 5 interactive activities that introduce students to:
+      - Community helpers in their neighborhood
+      - Local landmarks and their significance  
+      - Geographic features around their community
+      - Cultural traditions and celebrations
+      - Map reading basics for young learners
+      
+      Activities should follow NSA's PBR methodology and include multimedia elements.
+    </details>
+    <acceptance_criteria>
+      - All activities align with Grade 1 learning objectives
+      - Content is age-appropriate and engaging
+      - Includes accessibility considerations
+      - Multimedia elements properly referenced
+      - Activities support kinesthetic and visual learning styles
+    </acceptance_criteria>
+  </description>
+  
+  <requirements>
+    <deliverable>5 structured activity descriptions with resource requirements</deliverable>
+    <deliverable>Asset requirements list (images, videos, QR codes)</deliverable>
+    <deliverable>Assessment rubric for each activity</deliverable>
+    <deliverable>Teacher implementation guide</deliverable>
+    <dependencies>
+      <dependency id="NSA-2025-002" type="blocks">Grade 1 curriculum standards approval</dependency>
+      <dependency id="NSA-2025-015" type="related">Asset style guide finalization</dependency>
+    </dependencies>
+    <milestone>Q3 2025 Curriculum Launch</milestone>
+    <due_date>2025-08-15T17:00:00Z</due_date>
+  </requirements>
+  
+  <progress>
+    <current_status>Initial research completed, activity outlines in draft</current_status>
+    <completion_percentage>25</completion_percentage>
+    <next_steps>
+      <step priority="1" assignee="content.creator" due_date="2025-08-06T12:00:00Z">Complete activity design mockups</step>
+      <step priority="2" assignee="content.creator" due_date="2025-08-07T17:00:00Z">Define multimedia asset requirements</step>
+      <step priority="3" assignee="content.lead" due_date="2025-08-08T10:00:00Z">Review and approve activity designs</step>
+      <step priority="4" assignee="content.creator" due_date="2025-08-10T17:00:00Z">Create detailed implementation guides</step>
+    </next_steps>
+    <blockers>
+      <blocker severity="medium" identified_date="2025-08-04T10:30:00Z" owner="content.lead">
+        Waiting for curriculum standards committee approval on Grade 1 objectives
+      </blocker>
+    </blockers>
+    <risks>
+      <risk probability="medium" impact="high" mitigation="Have backup activities ready">
+        Multimedia assets may not be available in time for content creation
+      </risk>
+    </risks>
+  </progress>
+  
+  <communication>
+    <updates>
+      <update timestamp="2025-08-04T10:30:00Z" author="content.creator" type="status">
+        Ticket created. Starting research on Grade 1 community helper activities.
+        Reviewed existing NSA curriculum for similar content patterns.
+      </update>
+    </updates>
+    <related_documents>
+      <document url="https://docs.google.com/document/d/abc123" type="google_doc" description="SS1 Unit 2 Planning Document"/>
+      <document url="https://nsa-images.org/standards/grade1-social-studies.pdf" type="standards" description="Grade 1 Social Studies Standards"/>
+    </related_documents>
+    <notifications>
+      <notify team="asset" urgency="normal" method="github">
+        Asset requirements will be available by August 7th for multimedia planning
+      </notify>
+      <notify team="development" urgency="low" method="dashboard">
+        Content structure may require new activity template types
+      </notify>
+    </notifications>
+  </communication>
+  
+  <team_specific>
+    <content>
+      <lesson_metadata>
+        <subject>social_studies</subject>
+        <grade>1</grade>
+        <unit>2</unit>
+        <section>engage</section>
+        <topic>community_helpers_landmarks</topic>
+      </lesson_metadata>
+      <learning_objectives>
+        <objective>Students will identify community helpers and their roles</objective>
+        <objective>Students will recognize local landmarks and their significance</objective>
+        <objective>Students will demonstrate basic map reading skills</objective>
+        <objective>Students will describe cultural traditions in their community</objective>
+      </learning_objectives>
+      <pedagogical_notes>
+        <note>Include hands-on manipulatives for kinesthetic learners</note>
+        <note>Use visual aids and real photographs of local landmarks</note>
+        <note>Incorporate movement and role-playing activities</note>
+        <note>Ensure content represents diverse community helpers</note>
+      </pedagogical_notes>
+      <accessibility_requirements>
+        <requirement>Alt text for all images and visual content</requirement>
+        <requirement>Audio descriptions for video content</requirement>
+        <requirement>Large print options for text-heavy activities</requirement>
+        <requirement>Color contrast compliance for visual elements</requirement>
+      </accessibility_requirements>
+      <assessment_criteria>
+        <criteria>Student can identify 3+ community helpers</criteria>
+        <criteria>Student can point to landmarks on a simple map</criteria>
+        <criteria>Student can describe one cultural tradition</criteria>
+        <criteria>Student demonstrates engagement through participation</criteria>
+      </assessment_criteria>
+    </content>
+  </team_specific>
+</ticket>

@@ -1,0 +1,27 @@
+[
+  {
+    "key": "ctrl+shift+t",
+    "command": "workbench.action.tasks.runTask",
+    "args": "Start Ticket Dispatcher"
+  },
+  {
+    "key": "ctrl+shift+d",
+    "command": "workbench.action.tasks.runTask",
+    "args": "Start Dashboard"
+  },
+  {
+    "key": "ctrl+shift+n",
+    "command": "workbench.action.tasks.runTask",
+    "args": "Create New Ticket"
+  },
+  {
+    "key": "ctrl+shift+l",
+    "command": "workbench.action.tasks.runTask",
+    "args": "List Active Tickets"
+  },
+  {
+    "key": "ctrl+shift+a",
+    "command": "workbench.action.tasks.runTask",
+    "args": "Analyze Ticket Dependencies"
+  }
+]

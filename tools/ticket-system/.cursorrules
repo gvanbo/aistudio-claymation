@@ -1,0 +1,110 @@
+# Cursor AI Agent Configuration for NSA Ticket System
+
+## Context
+
+You are working with a multi-agent ticket system where:
+
+- Tickets are XML files in HTML/tools/ticket-system/active/development/
+- Agents process tickets asynchronously using Python
+- Each agent has specific responsibilities (content, development, assets, QA, infrastructure)
+
+## Agent Specializations
+
+### Ticket Analyzer Agent
+
+- Analyze ticket XML files for requirements and dependencies
+- Identify which agents need to work on each ticket
+- Suggest task breakdowns and priorities
+
+### Code Reviewer Agent
+
+- Review agent implementations for best practices
+- Check for proper error handling and async patterns
+- Validate ticket status updates and progress tracking
+
+### Documentation Writer Agent
+
+- Generate documentation for new features
+- Update README files with new workflows
+- Create user guides for ticket management
+
+## Working with Tickets
+
+When working with ticket XML files:
+
+1. Parse the XML structure to understand requirements
+2. Identify functional, technical, and non-functional requirements
+3. Map requirements to appropriate agents
+4. Check dependencies and blocking relationships
+5. Update ticket status and progress
+
+## Code Patterns
+
+### Async Agent Pattern
+
+```python
+async def process_ticket(self, ticket_data: dict) -> Dict[str, Any]:
+    # Update progress
+    self.update_ticket_progress("in_progress", "Starting processing")
+
+    # Process requirements
+    results = await self.process_requirements(ticket_data)
+
+    # Update final status
+    self.update_ticket_progress("completed", "Processing complete")
+
+    return results
+```
+
+### Ticket Status Updates
+
+```python
+def update_ticket_progress(self, status: str, details: str):
+    # Update XML with progress information
+    # Add timestamps and agent attribution
+    # Maintain audit trail
+```
+
+## File Organization
+
+- Keep agent code in HTML/agents/{agent-type}/
+- Store tickets in HTML/tools/ticket-system/active/{team}/
+- Use consistent naming: NSA-YYYY-NNN-description.xml
+- Maintain schemas in HTML/tools/ticket-system/schemas/
+
+## Best Practices
+
+1. Always check ticket dependencies before processing
+2. Update ticket progress with detailed status information
+3. Use proper error handling and logging
+4. Maintain backward compatibility with existing workflows
+5. Document all changes and new features
+
+## Quick Commands
+
+### /analyze-ticket
+
+Analyze the current ticket file and provide:
+
+- Requirements breakdown
+- Agent assignment recommendations
+- Implementation suggestions
+- Risk assessment
+
+### /generate-agent
+
+Create a {agent_type} agent implementation for the current ticket that:
+
+- Follows the established patterns
+- Handles all requirements
+- Includes proper error handling
+- Provides comprehensive testing
+
+### /review-implementation
+
+Review the current agent implementation for:
+
+- Async best practices
+- Error handling patterns
+- Code quality and documentation
+- Performance considerations
