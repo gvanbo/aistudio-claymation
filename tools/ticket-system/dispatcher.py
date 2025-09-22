@@ -25,11 +25,11 @@ class AsyncTaskDispatcher:
         self.task_queue = asyncio.Queue()
         self.active_tasks: Dict[str, Task] = {}
         self.agent_pools = {
-            "content": asyncio.Semaphore(4),  # Max 4 concurrent content tasks
-            "development": asyncio.Semaphore(3),
-            "asset": asyncio.Semaphore(5),
-            "qa": asyncio.Semaphore(3),
-            "infrastructure": asyncio.Semaphore(2)
+            "react-components": asyncio.Semaphore(3),  # Max 3 concurrent React tasks
+            "ai-integration": asyncio.Semaphore(2),
+            "animation": asyncio.Semaphore(2),
+            "testing": asyncio.Semaphore(4),
+            "deployment": asyncio.Semaphore(2)
         }
         self.completed_tasks = []
         self.blocked_tasks = []

@@ -2,14 +2,19 @@
   "files.associations": {
     "*.xml": "xml",
     "*.py": "python",
-    "*.md": "markdown"
+    "*.md": "markdown",
+    "*.tsx": "typescriptreact",
+    "*.ts": "typescript"
   },
-  "python.defaultInterpreterPath": "./venv/bin/python",
+  "python.defaultInterpreterPath": "python",
   "python.terminal.activateEnvironment": true,
   "files.exclude": {
     "**/__pycache__": true,
     "**/*.pyc": true,
-    "**/temp": true
+    "**/temp": true,
+    "**/dist": true,
+    "**/build": true,
+    "**/node_modules": true
   },
   "search.exclude": {
     "**/node_modules": true,

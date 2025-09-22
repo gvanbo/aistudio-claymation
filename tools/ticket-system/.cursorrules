@@ -1,32 +1,37 @@
-# Cursor AI Agent Configuration for NSA Ticket System
+# Cursor AI Agent Configuration for AI Studio Claymation Ticket System
 
 ## Context
 
 You are working with a multi-agent ticket system where:
 
-- Tickets are XML files in HTML/tools/ticket-system/active/development/
+- Tickets are XML files in aistudio-claymation/tools/ticket-system/active/development/
 - Agents process tickets asynchronously using Python
-- Each agent has specific responsibilities (content, development, assets, QA, infrastructure)
+- Each agent has specific responsibilities (react-components, ai-integration, animation, testing, deployment)
+- Focus on React/TypeScript development, AI Studio integrations, and animation tools
 
 ## Agent Specializations
 
-### Ticket Analyzer Agent
+### AI Studio Claymation Agent Specializations
 
-- Analyze ticket XML files for requirements and dependencies
-- Identify which agents need to work on each ticket
-- Suggest task breakdowns and priorities
+#### React Component Developer Agent
+- Create and maintain React/TypeScript components
+- Implement responsive UI designs and user interactions
+- Handle state management and component lifecycle
 
-### Code Reviewer Agent
+#### AI Integration Agent
+- Integrate with Google AI Studio and Gemini API
+- Manage prompt generation and AI model interactions
+- Handle API responses and error management
 
-- Review agent implementations for best practices
-- Check for proper error handling and async patterns
-- Validate ticket status updates and progress tracking
+#### Animation Developer Agent
+- Create claymation and animation effects
+- Implement character and background systems
+- Handle animation timing and transitions
 
-### Documentation Writer Agent
-
-- Generate documentation for new features
-- Update README files with new workflows
-- Create user guides for ticket management
+#### Testing Agent
+- Write and maintain Jest unit tests
+- Perform component testing and integration testing
+- Validate AI integration functionality
 
 ## Working with Tickets
 
