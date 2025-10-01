@@ -32,7 +32,7 @@ npm install
 ```
 
 ### 2. Configuration
-- Ensure `GEMINI_API_KEY` is set in `.env.local`
+- Ensure `GEMINI_API_KEY` is set in `.env`
 - Verify all feature flags are configured appropriately
 - Test with sample characters and prompts
 
