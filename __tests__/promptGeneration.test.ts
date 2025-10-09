@@ -9,8 +9,10 @@ describe('Prompt Generation Tests', () => {
     
     describe('Character Data Transformation', () => {
         it('should transform aistudio-claymation character to enhanced format', () => {
-            const originalCharacter = mockCharacters.alex;
-            const result = transformCharacterData('alex', originalCharacter);
+            // Remove deprecated style fields and include required height category
+            const { style_prefix: _sp1, style_suffix: _ss1, ...baseAlex } = mockCharacters.alex as any;
+            const originalCharacter = { ...baseAlex, height_category: 'short_child' as const };
+            const result = transformCharacterData('alex', originalCharacter as any);
             
             // Should preserve all original properties
             expect(result.character_name).toBe(originalCharacter.character_name);
@@ -21,16 +23,17 @@ describe('Prompt Generation Tests', () => {
             expect(result.id).toBe('alex');
             expect(result.appearance).toBe(originalCharacter.base_description);
             expect(result.placeholderImage).toBe('/models/alex.png');
+            expect(result.height_category).toBe('short_child');
         });
         
         it('should preserve all original character properties', () => {
-            const originalCharacter = mockCharacters.alex;
-            const result = transformCharacterData('alex', originalCharacter);
+            const { style_prefix: _sp2, style_suffix: _ss2, ...baseAlex } = mockCharacters.alex as any;
+            const originalCharacter = { ...baseAlex, height_category: 'short_child' as const };
+            const result = transformCharacterData('alex', originalCharacter as any);
             
             // Ensure we don't lose any existing functionality
             expect(result.poses.waving_happy).toBeDefined();
-            expect(result.style_prefix).toBeDefined();
-            expect(result.style_suffix).toBeDefined();
+            expect(result.height_category).toBe('short_child');
         });
     });
     
@@ -61,30 +64,32 @@ describe('Prompt Generation Tests', () => {
     
     describe('Height Calculation Logic', () => {
         it('should calculate height relationships correctly', () => {
-            const grade1Char = transformCharacterData('alex', mockCharacters.alex);
+            const { style_prefix: _sp3, style_suffix: _ss3, ...baseAlex } = mockCharacters.alex as any;
+            const grade1Char = transformCharacterData('alex', { ...baseAlex, height_category: 'short_child' as const } as any);
             const teacherChar = transformCharacterData('teacher', {
                 character_name: 'Ms. Test',
                 character_short_description: 'female teacher',
                 base_description: 'teacher description',
-                style_prefix: 'test',
-                style_suffix: 'test',
-                poses: {}
-            });
+                poses: {},
+                height_category: 'adult' as const
+            } as any);
             
             const result = calculateHeightRelationships([grade1Char, teacherChar]);
-            expect(result).toContain('Ms. Test is taller than Alex');
+            // New logic uses explicit height categories and a more instructive message
+            expect(result).toContain('Ms. Test');
+            expect(result).toContain('significantly taller than Alex');
         });
         
         it('should handle characters of same height category', () => {
-            const char1 = transformCharacterData('alex', mockCharacters.alex);
+            const { style_prefix: _sp4, style_suffix: _ss4, ...baseAlex } = mockCharacters.alex as any;
+            const char1 = transformCharacterData('alex', { ...baseAlex, height_category: 'short_child' as const } as any);
             const char2 = transformCharacterData('zoe', {
                 character_name: 'Zoe',
                 character_short_description: 'grade 1 girl',
                 base_description: 'test',
-                style_prefix: 'test',
-                style_suffix: 'test',
-                poses: {}
-            });
+                poses: {},
+                height_category: 'short_child' as const
+            } as any);
             
             const result = calculateHeightRelationships([char1, char2]);
             expect(result).toBe(''); // No height differences for same category
@@ -93,7 +98,8 @@ describe('Prompt Generation Tests', () => {
     
     describe('Structured Prompt Generation', () => {
         it('should generate structured prompt for single character', () => {
-            const character = transformCharacterData('alex', mockCharacters.alex);
+            const { style_prefix: _sp5, style_suffix: _ss5, ...baseAlex } = mockCharacters.alex as any;
+            const character = transformCharacterData('alex', { ...baseAlex, height_category: 'short_child' as const } as any);
             const pose = "jumping with excitement";
             const config = mockGenerationConfig;
             const options = {
@@ -112,7 +118,8 @@ describe('Prompt Generation Tests', () => {
         });
         
         it('should handle background options correctly', () => {
-            const character = transformCharacterData('alex', mockCharacters.alex);
+            const { style_prefix: _sp6, style_suffix: _ss6, ...baseAlex } = mockCharacters.alex as any;
+            const character = transformCharacterData('alex', { ...baseAlex, height_category: 'short_child' as const } as any);
             const pose = "waving hello";
             
             // Test transparent background
@@ -137,15 +144,15 @@ describe('Prompt Generation Tests', () => {
     
     describe('Multi-Character Scene Generation', () => {
         it('should generate prompts with height calculations', () => {
-            const grade1Char = transformCharacterData('alex', mockCharacters.alex);
+            const { style_prefix: _sp7, style_suffix: _ss7, ...baseAlex } = mockCharacters.alex as any;
+            const grade1Char = transformCharacterData('alex', { ...baseAlex, height_category: 'short_child' as const } as any);
             const teacherChar = transformCharacterData('teacher', {
                 character_name: 'Ms. Rodriguez',
                 character_short_description: 'female teacher',
                 base_description: 'teacher description',
-                style_prefix: 'test',
-                style_suffix: 'test',
-                poses: {}
-            });
+                poses: {},
+                height_category: 'adult' as const
+            } as any);
             
             const characterPrompts = {
                 alex: 'waving',
@@ -161,7 +168,9 @@ describe('Prompt Generation Tests', () => {
             
             const prompt = generatePrompt([grade1Char, teacherChar], characterPrompts, 'teaching scene', config, options);
             
-            expect(prompt).toContain('Ms. Rodriguez is taller than Alex');
+            // New height instruction phrasing
+            expect(prompt).toContain('Ms. Rodriguez');
+            expect(prompt).toContain('significantly taller than Alex');
             expect(prompt).toContain('teaching scene');
             expect(prompt).toContain('EXACTLY 2 characters');
         });

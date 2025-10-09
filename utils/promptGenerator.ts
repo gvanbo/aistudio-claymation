@@ -1,6 +1,7 @@
 // Enhanced prompt generation utilities combining best practices from both applications
 
-import { Character, EnhancedCharacter, GenerationConfig, PromptGenerationOptions } from '../types.enhanced';
+import { Character, EnhancedCharacter, GenerationConfig, PromptGenerationOptions, HeightCategory } from '../types.enhanced';
+import { CLAYMATION_STYLE_PREFIX, CLAYMATION_STYLE_SUFFIX } from '../constants/characters'; // Import global styles
 
 /**
  * Transform aistudio-claymation character to enhanced format
@@ -29,32 +30,37 @@ export function validateConfig(config: Partial<GenerationConfig>): GenerationCon
 }
 
 /**
- * Generate height relationships for multi-character scenes (from aistudio-claymation)
+ * Generate height relationships for multi-character scenes using explicit height categories.
+ * This is more reliable and cleaner than string matching.
  */
 export function calculateHeightRelationships(characters: EnhancedCharacter[]): string {
-    type HeightCategory = 'short' | 'medium' | 'tall';
+    const heightOrder: HeightCategory[] = ['short_child', 'medium_child', 'teenager', 'adult'];
     
-    const getHeightCategory = (char: EnhancedCharacter): HeightCategory => {
-        if (char.character_short_description.includes('grade 1')) return 'short';
-        if (char.character_short_description.includes('grade 6')) return 'medium';
-        if (char.character_short_description.includes('teacher')) return 'tall';
-        return 'medium'; // Fallback
-    };
-
+    // 1. Map and sort characters by explicit height category
     const characterHeights = characters.map(char => ({
         name: char.character_name,
-        category: getHeightCategory(char)
+        category: char.height_category,
     }));
     
-    const heightOrder: HeightCategory[] = ['short', 'medium', 'tall'];
     characterHeights.sort((a, b) => heightOrder.indexOf(a.category) - heightOrder.indexOf(b.category));
     
+    // 2. Generate height instructions
     let heightDescriptions = '';
     for (let i = 1; i < characterHeights.length; i++) {
         const shorterChar = characterHeights[i-1];
         const tallerChar = characterHeights[i];
+        
+        // Only generate comparison if categories are different
         if (shorterChar.category !== tallerChar.category) {
-            heightDescriptions += `${tallerChar.name} is taller than ${shorterChar.name}. `;
+            // Use specific age comparison for better prompt grounding
+            const isStudentTeacher = tallerChar.category === 'adult' && (shorterChar.category === 'short_child' || shorterChar.category === 'medium_child' || shorterChar.category === 'teenager');
+            
+            if (isStudentTeacher) {
+                // Highly important for proportions: enforce adult size vs small child size
+                heightDescriptions += `${tallerChar.name} must be rendered with full adult proportions and standing significantly taller than ${shorterChar.name} who must retain their correct child proportions. `;
+            } else {
+                 heightDescriptions += `${tallerChar.name} is visibly taller than ${shorterChar.name}. `;
+            }
         }
     }
     
@@ -67,13 +73,13 @@ export function calculateHeightRelationships(characters: EnhancedCharacter[]): s
 export function generateBackgroundInstruction(config: GenerationConfig): string {
     switch (config.backgroundOption) {
         case 'transparent':
-            return 'The image must have a transparent background.';
+            return 'The final image must have a transparent background. DO NOT add any background color, elements, or scenery behind the character(s).';
         case 'illustrated':
-            return `The character is in a scene with a full illustrated background. The background is described as: "${config.customBackground || "a simple, aesthetically pleasing background that complements the character's pose"}". The art style should apply to the character and the background.`;
+            return `The character is in a scene with a full illustrated background. The background is described as: "${config.customBackground || "a simple, aesthetically pleasing educational background that complements the character(s)' pose"}". The art style should apply to the character and the background.`;
         case 'solid_white':
-            return 'The image has a solid white background, perfect for educational materials and print use.';
+            return 'The image has a solid white, pure white background (#FFFFFF). DO NOT add any objects or scenery.';
         default:
-            return 'The image must have a transparent background.';
+            return 'The final image must have a transparent background. DO NOT add any background color, elements, or scenery behind the character(s).';
     }
 }
 
@@ -83,27 +89,23 @@ export function generateBackgroundInstruction(config: GenerationConfig): string 
 export function generateQualitySpecs(config: GenerationConfig): string {
     const specs = [];
     
+    // Token efficiency: use descriptive terms rather than long sentences
     switch (config.qualityLevel) {
         case 'high_res':
-            specs.push('ultra-high resolution');
-            specs.push('professional quality');
-            specs.push('suitable for large format printing');
+            specs.push('ultra-high resolution, professional quality, suitable for large format printing');
             break;
         case 'print':
-            specs.push('high resolution');
-            specs.push('print-ready quality');
-            specs.push('crisp details');
+            specs.push('high resolution, print-ready quality, crisp details');
             break;
         case 'web':
-            specs.push('web-optimized resolution');
-            specs.push('balanced quality and file size');
+            specs.push('web-optimized resolution, balanced quality and file size');
             break;
     }
     
     if (config.outputFormat === 'png') {
-        specs.push('PNG format with transparency support');
+        specs.push('PNG format, preserve transparency');
     } else {
-        specs.push('JPEG format optimized for file size');
+        specs.push('JPEG format, file size optimized');
     }
     
     return specs.join(', ');
@@ -144,12 +146,12 @@ function generateSingleCharacterPrompt(
     backgroundInstruction: string,
     qualitySpecs: string
 ): string {
+    // Token Efficiency: Concatenate the global prefix/suffix only once.
     if (options.useStructuredFormat) {
-        // Use cartoon-character-generator's structured format
         return `Generate a single full-body character image.
 
 **CRITICAL INSTRUCTIONS:**
-1. The final image must contain ONLY ONE character.
+1. The final image must contain ONLY ONE character, which must be consistent with previous images of ${character.character_name}.
 2. Do not include multiple versions or poses of the character.
 3. Do not generate any text, letters, or numbers in the image.
 4. ${qualitySpecs}.
@@ -161,10 +163,10 @@ function generateSingleCharacterPrompt(
 - **Appearance:** ${character.appearance || character.base_description}.
 - **Pose & Expression:** ${pose}.
 
-**ART STYLE:** ${character.style_prefix} ${character.style_suffix}`;
+**ART STYLE:** ${CLAYMATION_STYLE_PREFIX} ${CLAYMATION_STYLE_SUFFIX}`;
     } else {
-        // Use original aistudio-claymation format
-        return `${character.style_prefix}, ${character.base_description}, ${pose}${character.style_suffix}`;
+        // Fallback to original aistudio-claymation format (now using global constants)
+        return `${CLAYMATION_STYLE_PREFIX}, ${character.base_description}, ${pose}${CLAYMATION_STYLE_SUFFIX}`;
     }
 }
 
@@ -182,7 +184,7 @@ function generateMultiCharacterPrompt(
 ): string {
     const characterDetails = characters.map((char, index) => {
         const pose = characterPrompts[char.id] || 'a neutral pose';
-        return `**CHARACTER ${index + 1}: ${char.character_name}**
+        return `**CHARACTER ${index + 1}: ${char.character_name}** (Must be consistent with prior generations)
 - **Appearance:** ${char.appearance || char.base_description}.
 - **Pose & Expression:** ${pose}.`;
     }).join('\n');
@@ -191,19 +193,18 @@ function generateMultiCharacterPrompt(
     if (options.includeHeightCalculations) {
         const heightRelationships = calculateHeightRelationships(characters);
         if (heightRelationships) {
-            heightInstruction = ` For realistic scale, remember that ${heightRelationships}`;
+            heightInstruction = ` **RELATIVE SCALE INSTRUCTION:** ${heightRelationships}`;
         }
     }
     
     if (options.useStructuredFormat) {
-        return `Generate a single image with ${characters.length} characters interacting.
+        return `Generate a single image with ${characters.length} characters interacting in a high-quality educational style.
 
 **CRITICAL INSTRUCTIONS:**
 1. The final image must contain EXACTLY ${characters.length} characters as described.
-2. All characters must be visible and interacting as described.
-3. The art style must be consistent for all characters.
-4. Do not generate any text, letters, or numbers in the image.
-5. ${qualitySpecs}.
+2. All characters must be visually consistent, visible, and interacting as described.
+3. Do not generate any text, letters, or numbers in the image.
+4. ${qualitySpecs}.
 
 **CHARACTERS & POSES:**
 ${characterDetails}
@@ -211,13 +212,14 @@ ${characterDetails}
 **SCENE & INTERACTION:**
 - **Interaction Description:** ${interactionPrompt || 'The characters are positioned near each other.'}
 - **Background:** ${backgroundInstruction}${heightInstruction}
-- **Overall Art Style:** ${characters[0].style_prefix} ${characters[0].style_suffix}`;
+
+**ART STYLE:** ${CLAYMATION_STYLE_PREFIX} ${CLAYMATION_STYLE_SUFFIX}`;
     } else {
-        // Fallback to enhanced aistudio-claymation format
+        // Fallback to enhanced aistudio-claymation format (now using global constants)
         const characterDefinitions = characters
-            .map(char => `${char.character_name} is ${char.base_description}`)
+            .map(char => `${char.character_name} is ${char.base_description} in the following pose: ${characterPrompts[char.id] || 'a neutral stance'}`)
             .join('. ');
             
-        return `${characters[0].style_prefix}, ${interactionPrompt}. The scene features: ${characterDefinitions}.${heightInstruction} ${characters[0].style_suffix}`;
+        return `${CLAYMATION_STYLE_PREFIX}, ${interactionPrompt}. The scene features: ${characterDefinitions}.${heightInstruction} ${CLAYMATION_STYLE_SUFFIX}`;
     }
 }

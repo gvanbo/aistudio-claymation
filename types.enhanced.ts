@@ -4,14 +4,23 @@ export interface Pose {
     [key: string]: string;
 }
 
-// Original aistudio-claymation character structure (preserved for backward compatibility)
+export type HeightCategory = 'short_child' | 'medium_child' | 'teenager' | 'adult';
+export type OutputFormat = 'png' | 'jpeg';
+export type BackgroundOption = 'transparent' | 'illustrated' | 'solid_white';
+export type QualityLevel = 'web' | 'print' | 'high_res';
+export type AspectRatio = '1:1' | '16:9' | '4:3';
+
+
+// Original aistudio-claymation character structure (modified for efficiency)
 export interface Character {
     character_name: string;
     character_short_description: string;
     base_description: string;
-    style_prefix: string;
-    style_suffix: string;
+    // Removed style_prefix and style_suffix from the object for token efficiency. 
+    // They are now global constants (see characters.ts).
     poses: Pose;
+    // New explicit height category for consistent scaling
+    height_category: HeightCategory;
 }
 
 // Enhanced character interface that adds cartoon-character-generator features
@@ -28,11 +37,6 @@ export interface CharacterData {
 }
 
 // New configuration types for enhanced functionality
-export type OutputFormat = 'png' | 'jpeg';
-export type BackgroundOption = 'transparent' | 'illustrated' | 'solid_white';
-export type QualityLevel = 'web' | 'print' | 'high_res';
-export type AspectRatio = '1:1' | '16:9' | '4:3';
-
 export interface GenerationConfig {
     outputFormat: OutputFormat;
     backgroundOption: BackgroundOption;

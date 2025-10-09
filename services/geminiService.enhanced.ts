@@ -1,50 +1,102 @@
-// Enhanced Gemini service combining best practices from both applications
-
-import { GoogleGenAI } from "@google/genai";
 import { GenerationConfig } from '../types.enhanced';
 
-// Prefer GEMINI_API_KEY (explicit) fallback to generic API_KEY for backwards compatibility
-const apiKey = process.env.GEMINI_API_KEY || process.env.API_KEY;
-if (!apiKey) {
-    throw new Error("GEMINI_API_KEY (or legacy API_KEY) environment variable not set.");
-}
+// --- Configuration for Local Environment/Vite Injection ---
+// To use a local .env file (as commonly done in development with Vite), 
+// we read the API key directly from the environment variables exposed by Vite's define block.
+// Note: In a secure deployment environment like Canvas, this value is usually injected or provided 
+// as an empty string to be handled by the runtime system.
+const apiKey = process.env.GEMINI_API_KEY || ""; 
 
-const ai = new GoogleGenAI({ apiKey });
+const MODEL_NAME = 'gemini-2.5-flash-image-preview'; 
+const API_URL_BASE = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent`;
 
 /**
- * Enhanced image generation with configurable output options
- * Combines aistudio-claymation's robust error handling with cartoon-character-generator's format control
+ * Utility function for exponential backoff retry logic.
+ */
+async function fetchWithRetry(url: string, options: RequestInit, maxRetries = 3): Promise<Response> {
+    for (let i = 0; i < maxRetries; i++) {
+        try {
+            const response = await fetch(url, options);
+            if (response.ok) {
+                return response;
+            }
+            // Retry on specific server errors or rate limiting (429)
+            if (response.status === 429 || response.status >= 500) {
+                throw new Error(`HTTP error ${response.status}`);
+            }
+            return response; // Return for 4xx errors that shouldn't be retried
+        } catch (error) {
+            if (i < maxRetries - 1) {
+                // Exponential backoff with jitter: 1-2s, 2-3s, 4-5s
+                const baseDelay = 2 ** i * 1000; 
+                const jitter = Math.random() * 1000; // Add up to 1s of randomness
+                const delay = baseDelay + jitter;
+                await new Promise(resolve => setTimeout(resolve, delay));
+            } else {
+                throw error;
+            }
+        }
+    }
+    throw new Error('Fetch failed after maximum retries.');
+}
+
+/**
+ * Enhanced image generation with configurable output options using the gemini-2.5-flash-image-preview model.
  */
 export async function generateImage(prompt: string, config?: Partial<GenerationConfig>): Promise<string> {
     const finalConfig = {
         outputFormat: config?.outputFormat || 'png',
         qualityLevel: config?.qualityLevel || 'print',
-        aspectRatio: config?.aspectRatio || '1:1'
+        aspectRatio: config?.aspectRatio || '1:1',
     };
     
-    // Determine output MIME type based on format and use case
-    const outputMimeType = finalConfig.outputFormat === 'png' ? 'image/png' : 'image/jpeg';
-    
+    // The nano model uses the generateContent endpoint with specific generationConfig
+    // Note: The apiKey is only added here if it's explicitly set (e.g., in a local .env file). 
+    // If running in an environment that handles injection (and apiKey is an empty string), 
+    // the query parameter will simply be empty, allowing the runtime to handle authorization.
+    const apiKeyParam = apiKey ? `?key=${apiKey}` : '';
+    const apiUrl = `${API_URL_BASE}${apiKeyParam}`;
+
+    const payload = {
+        contents: [{
+            parts: [{ text: prompt }]
+        }],
+        generationConfig: {
+            // Mandate both TEXT and IMAGE modalities for image generation
+            responseModalities: ['TEXT', 'IMAGE'], 
+        },
+    };
+
     try {
-        const response = await ai.models.generateImages({
-            model: 'imagen-3.0-generate-002',
-            prompt: prompt,
-            config: {
-                numberOfImages: 1,
-                outputMimeType: outputMimeType,
-                aspectRatio: finalConfig.aspectRatio,
-            },
+        const response = await fetchWithRetry(apiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
         });
 
-        if (response.generatedImages && response.generatedImages.length > 0) {
-            const base64ImageBytes: string = response.generatedImages[0].image.imageBytes;
-            return base64ImageBytes;
-        } else {
-            throw new Error("Image generation failed: No images were returned.");
+        const result = await response.json();
+        const candidate = result.candidates?.[0];
+
+        if (candidate) {
+            // Extract the base64 image data from inlineData part
+            const base64Data = candidate.content?.parts?.find((p: any) => p.inlineData)?.inlineData?.data;
+
+            if (base64Data) {
+                return base64Data;
+            }
+            
+            // Handle generation failure or safety block with error message
+            const textOutput = candidate.content?.parts?.find((p: any) => p.text)?.text;
+            
+            if (result.promptFeedback?.blockReason || textOutput) {
+                 throw new Error(textOutput || `Image generation failed. This might be due to safety filters or an empty response.`);
+            }
         }
+        
+        throw new Error("Image generation failed: No image data returned from the API.");
+
     } catch (error) {
         console.error("Error generating image:", error);
-        // Enhanced error handling from aistudio-claymation
         if (error instanceof Error) {
             throw new Error(`Gemini API Error: ${error.message}`);
         }
@@ -89,7 +141,6 @@ export async function generateEducationalImage(
 
 /**
  * Batch generation for multiple characters or poses
- * Useful for creating educational resource sets
  */
 export async function generateImageBatch(
     prompts: Array<{ prompt: string; config?: Partial<GenerationConfig>; id: string }>,
@@ -105,12 +156,13 @@ export async function generateImageBatch(
                 onProgress(i, prompts.length, id);
             }
             
+            // Note: The nano model will handle the prompt as input to generate the image
             const imageData = await generateImage(prompt, config);
             results.push({ id, imageData });
             
-            // Small delay to avoid rate limiting
+            // Increased delay to avoid rate limiting, especially for larger batches.
             if (i < prompts.length - 1) {
-                await new Promise(resolve => setTimeout(resolve, 1000));
+                await new Promise(resolve => setTimeout(resolve, 2000)); // Increased from 1s to 2s
             }
         } catch (error) {
             console.error(`Failed to generate image for ${id}:`, error);
