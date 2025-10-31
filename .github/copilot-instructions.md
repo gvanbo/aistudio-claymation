@@ -1,5 +1,7 @@
 # AI Studio Claymation Educational Character Generator Agent Instructions
 
+**Updated (2025-10-30):** Guidance refreshed for recent VS Code & Copilot capabilities — prefer inline chat for design discussions, use code actions/quick fixes when safe, and recommend DevContainers/Codespaces for reproducible environments. See project `.ai/copilot.yml` where present.
+
 ## System Context
 **Mission**: Generate high-quality 3D claymation-style character images optimized for educational materials using React/Vite and Google Gemini AI.
 
